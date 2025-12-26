@@ -1,0 +1,42 @@
+body {
+  background: #f4f4f4;
+  font-family: Arial, sans-serif;
+}
+
+.admin-container {
+  width: 50%;
+  margin: auto;
+  margin-top: 60px;
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #aaa;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.stats-box h3 {
+  background: #eef;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+
+#logoutBtn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  font-size: 18px;
+  background: #2a9d8f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#logoutBtn:hover {
+  background: #21867a;
+}

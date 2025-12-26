@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Donation Marketplace</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <div class="admin-container">
+    <h1>Admin Dashboard</h1>
+
+    <div class="stats-box">
+      <p>Total Donations Received: <span id="donationsCount">0</span></p>
+      <p>Total Items Issued: <span id="issuedCount">0</span></p>
+      <p>Total Registered Users: <span id="usersCount">0</span></p>
+    </div>
+
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
+
+  <script>
+
+    // Redirect if not admin
+    if (localStorage.getItem("role") !== "admin") {
+      alert("Unauthorized Access!");
+      window.location.href = "login.html";
+    }
+
+    // Logout
+    document.getElementById("logoutBtn").onclick = () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    };
+
+    // Load Admin Stats
+    async function loadStats() {
+      try {
+        const res = await fetch("http://localhost:5000/api/admin/stats");
+        const data = await res.json();
+
+        document.getElementById("donationsCount").innerText = data.totalDonations;
+        document.getElementById("issuedCount").innerText = data.totalIssued;
+        document.getElementById("usersCount").innerText = data.usersCount;
+
+      } catch (err) {
+        console.error(err);
+        alert("Failed to load admin stats");
+      }
+    }
+
+    loadStats();
+
+  </script>
+
+</body>
+</html>

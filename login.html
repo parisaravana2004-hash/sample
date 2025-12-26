@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | Donation Marketplace</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <section class="form-section">
+    <h2>Welcome Back</h2>
+
+    <form id="loginForm">
+      <label>Email:</label>
+      <input type="email" id="email" placeholder="Enter your email" required />
+
+      <label>Password:</label>
+      <input type="password" id="password" placeholder="Enter your password" required />
+
+      <button type="submit" class="btn">Login</button>
+    </form>
+
+    <p style="text-align:center; margin-top:10px;">
+      Don't have an account? <a href="registration.html">Register here</a>
+    </p>
+  </section>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("⚠️ Please fill out all fields.");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:5000/api/users/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("✅ Login successful!");
+          localStorage.setItem("token", data.token);
+       localStorage.setItem("role", data.user.role);
+       
+localStorage.setItem("userId", data.user.id);
+
+
+
+          // Redirect based on role
+         if (data.user.role === "admin") {
+    window.location.href = "admin.html";
+} 
+else if (data.user.role === "donor") {
+    localStorage.setItem("userId", data.user.id);
+    window.location.href = "donor-dashboard.html";
+}
+
+else {
+    window.location.href = "browse.html"; // receiver
+}
+
+
+        } else {
+          alert("❌ " + data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        alert("⚠️ Server error. Please try again later.");
+      }
+    });
+  </script>
+</body>
+</html>

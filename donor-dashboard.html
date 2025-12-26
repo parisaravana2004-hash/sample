@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>My Donations</title>
+
+<style>
+    body { font-family: Arial; background: #f7f7f7; margin: 0; }
+    header { background: #007bff; padding: 15px; color: white; text-align: center; font-size: 22px; }
+    .container { width: 90%; max-width: 900px; margin: 30px auto; background: white; padding: 20px; border-radius: 10px; }
+    .donation-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; background:white; }
+    .status { font-weight: bold; }
+    .available { color: green; }
+    .requested { color: orange; }
+    .issued { color: red; }
+
+    .btn { padding: 10px 15px; background: #007bff; color: white; border: none; border-radius: 5px; text-decoration: none; cursor:pointer; }
+    .logout { background: red; }
+
+    .accept-btn {
+        background: green;
+        margin-top: 10px;
+        display: inline-block;
+    }
+</style>
+</head>
+
+<body>
+<header>My Donations</header>
+
+<div class="container">
+
+    <a href="donate.html" class="btn">➕ Add New Donation</a>
+    <button class="btn logout" onclick="logout()">Logout</button>
+
+    <h2>Your Donated Items</h2>
+
+    <div id="donationsList">
+        <p>Loading donations...</p>
+    </div>
+
+</div>
+
+<script>
+async function loadDonations() {
+    const res = await fetch("http://localhost:5000/api/donations/");
+    const data = await res.json();
+
+    const list = document.getElementById("donationsList");
+    list.innerHTML = "";
+
+    if (data.length === 0) {
+        list.innerHTML = "<p>No donations yet.</p>";
+        return;
+    }
+
+    data.forEach(d => {
+        const card = document.createElement("div");
+        card.className = "donation-card";
+
+        card.innerHTML = `
+            <h3>${d.itemName}</h3>
+            <p><strong>Category:</strong> ${d.category}</p>
+            <p><strong>Quantity:</strong> ${d.quantity}</p>
+            <p><strong>Status:</strong> 
+                <span class="${d.status}">${d.status.toUpperCase()}</span>
+            </p>
+        `;
+
+        // 👉 Show ACCEPT button only if requested
+        if (d.status === "requested") {
+            const btn = document.createElement("button");
+            btn.className = "btn accept-btn";
+            btn.innerText = "Accept Request";
+
+            btn.onclick = async () => {
+                await acceptRequest(d._id);
+            };
+
+            card.appendChild(btn);
+        }
+
+        list.appendChild(card);
+    });
+}
+
+// ✔ Accept request → mark as issued + remove from donor dashboard
+async function acceptRequest(id) {
+    const res = await fetch(`http://localhost:5000/api/donations/issue/${id}`, {
+        method: "PUT"
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    // reload list (item will disappear)
+    loadDonations();
+}
+
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+
+loadDonations();
+</script>
+
+</body>
+</html>
